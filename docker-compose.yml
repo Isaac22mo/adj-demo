@@ -22,11 +22,14 @@ services:
         API_HOST: localhost
         API_PORT: 8081
         API_BASE: /adj-api
+        API_PROTOCOL: https
     container_name: adj-client
     ports:
       - "3000:80"
     networks:
       - adj-net
+    volumes:
+      - certbot-conf:/etc/letsencrypt:ro
     restart: unless-stopped
     depends_on:
       - database
@@ -43,15 +46,22 @@ services:
       DB_NAME: adj-demo
       DB_USER: root
       DB_PASS: root
+      SERVER_SSL_ENABLE: true
+      SERVER_SSL_KEYSTORE: /etc/letsencrypt/lib/localhost/keystore.p12
+      SERVER_SSL_KEYSTORE_PASS: changeit
     ports:
       - "8081:8080"
     networks:
       - adj-net
+    volumes:
+      - certbot-conf:/etc/letsencrypt:ro
     depends_on:
       - frontend
 
 volumes:
   adj-volume:
+    external: true
+  certbot-conf:
     external: true
 
 networks:
